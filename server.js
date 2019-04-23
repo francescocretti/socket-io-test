@@ -2,20 +2,44 @@ var app = require('express')();
 var http = require('http').createServer(app);
 var io = require('socket.io')(http);
 
+var numUsers = 0;
+
 app.get('/', function(req, res) {
   res.sendFile(__dirname + '/index.html');
 });
 
+app.get('/js/:filename', function(req, res) {
+  res.sendFile(__dirname + '/js/' + req.params.filename);
+});
+
 io.on('connection', function(socket) {
-  // console.log('an user connected');
-  // socket.on('disconnect', function(){
-  //   console.log('user disconnected');
-  // });
+  var addedUser = false;
+  socket.on('add user', function(username) {
+    if (addedUser) return;
+
+    // we store the username in the socket session for this client
+    console.log(socket.client.id);
+    socket.username = username;
+
+    ++numUsers;
+    addedUser = true;
+    socket.emit('login', {
+      numUsers: numUsers
+    });
+
+  });
+
   socket.on('chat message', function(msg) {
-    // console.log('message: ' + msg);
     io.emit('chat message', msg);
+    // socket.to(msg).emit('solo per te: ' + msg);
+  });
+
+  socket.on('say to someone', (id, msg) => {
+    // send a private message to the socket with the given id
+    socket.to(id).emit('my message', msg);
   });
 });
+
 
 http.listen(4444, function() {
   console.log('listening on 4444');
