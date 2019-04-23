@@ -18,8 +18,9 @@ $(function() {
     $('#m').val('');
     return false;
   });
+
   socket.on('chat message', function(msg) {
-    oscillator.frequency.setValueAtTime(parseInt(msg), audioContext.currentTime);
+    // oscillator.frequency.setValueAtTime(parseInt(msg), audioContext.currentTime);
     $('#messages').append($('<li>').text(msg));
   });
 

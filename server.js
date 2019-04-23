@@ -31,13 +31,10 @@ io.on('connection', function(socket) {
 
   socket.on('chat message', function(msg) {
     io.emit('chat message', msg);
-    // socket.to(msg).emit('solo per te: ' + msg);
+    // NOTE: to test, send message to user if write user ID
+    socket.broadcast.to(msg).emit('chat message', 'for your eyes only: ' + msg);
   });
 
-  socket.on('say to someone', (id, msg) => {
-    // send a private message to the socket with the given id
-    socket.to(id).emit('my message', msg);
-  });
 });
 
 
