@@ -34,8 +34,10 @@ io.on('connection', function(socket) {
   });
 
   socket.on('new pos', function(lat) {
-    console.log("new pos", lat)
-    io.emit('chat message', lat)
+    console.log("new pos", lat);
+    io.emit('chat message', lat);
+    var freq = Math.random() * (800 - 300) + 300;
+    io.emit('play sound', freq);
   });
 
   socket.on('chat message', function(msg) {
