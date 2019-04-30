@@ -4,6 +4,8 @@ var io = require('socket.io')(http);
 
 var numUsers = 0;
 
+let usernamesMap = {};
+
 app.get('/', function(req, res) {
   res.sendFile(__dirname + '/index.html');
 });
@@ -15,6 +17,8 @@ app.get('/js/:filename', function(req, res) {
 io.on('connection', function(socket) {
   var addedUser = false;
   socket.on('add user', function(username) {
+    usernamesMap[username] = socket.client.id;
+    io.emit('chat message', "si è connesso l'utente: " + username);
     if (addedUser) return;
 
     // we store the username in the socket session for this client
@@ -29,10 +33,18 @@ io.on('connection', function(socket) {
 
   });
 
+  socket.on('new pos', function(lat) {
+    console.log("new pos", lat)
+    io.emit('chat message', lat)
+  });
+
   socket.on('chat message', function(msg) {
     io.emit('chat message', msg);
     // NOTE: to test, send message to user if write user ID
-    socket.broadcast.to(msg).emit('chat message', 'for your eyes only: ' + msg);
+    if (msg.startsWith("\\to")) {
+      username = msg.split(" ")[1]
+      socket.broadcast.to(usernamesMap[username]).emit('chat message', 'for your eyes only: ' + msg);
+    }
   });
 
 });

@@ -10,7 +10,7 @@ const cleanInput = (input) => {
 $(function() {
 
   var oscillator = initOscillator(audioContext);
-  // oscillator.start();
+  oscillator.start();
   var socket = io();
   $('form').submit(function(e) {
     e.preventDefault(); // prevents page reloading
@@ -37,6 +37,27 @@ $(function() {
       }
     }
   });
+
+  function success(pos) {
+    var crd = pos.coords;
+    socket.emit('new pos', crd.latitude);
+    console.log(crd)
+
+    navigator.geolocation.clearWatch(id);
+  }
+
+  function error(err) {
+    console.warn('ERROR(' + err.code + '): ' + err.message);
+  }
+
+  options = {
+    enableHighAccuracy: false,
+    timeout: 1000,
+    maximumAge: 0
+  };
+
+  id = navigator.geolocation.watchPosition(success, error, options);
+
 });
 
 function initOscillator(ctx) {
