@@ -3,7 +3,7 @@
  "version": "0.0.1",
  "description": "experiments test with Socket.io",
  "dependencies": {
-  "express": "^4.15.2",
+  "express": "^4.17.3",
   "socket.io": "^2.2.0"
  }
 }
